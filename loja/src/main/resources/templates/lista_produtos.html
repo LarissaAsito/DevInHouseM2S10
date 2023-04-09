@@ -11,6 +11,8 @@
       <div th:text="${produtoDTO.descricao}"></div>
       <div th:text="${produtoDTO.dataLancamento}"></div>
       <div th:text="${produtoDTO.preco}"></div>
+      <div><a th:href="@{/produto/editar/{id}(id=${produtoDTO.id})}" class="btn btn-primary">Editar</a></div>
+      <div><a th:href="@{/produto/deletar/{id}(id=${produtoDTO.id})}" class="btn btn-primary">Excluir</a></div>
     </div>
   </div>
 </body>

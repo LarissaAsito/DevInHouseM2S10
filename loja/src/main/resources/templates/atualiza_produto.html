@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form action="#"
+          th:action="@{/produto/editar/{id}(id=${produtoDTO.id})}"
+          th:object="${produtoDTO}"
+          method="post"
+    >
+        <label for="nome" >Nome</label>
+        <input type="text" th:field="*{nome}"  id="nome" placeholder="Nome">
+        <label for="descricao" >Descrição</label>
+        <input type="text" th:field="*{descricao}"  id="descricao" placeholder="Descrição">
+        <label for="dataLancamento" >Data de Lançamento (formato dd-mm-yyyy)</label>
+        <input type="text" th:field="*{dataLancamento}"  id="dataLancamento" placeholder="Data de Lançamento">
+        <label for="preco" >Preço</label>
+        <input type="text" th:field="*{preco}"  id="preco" placeholder="Preço">
+        <!--    <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger">-->
+        <!--      -->
+        <!--    </span>-->
+
+        <input type="submit" value="Att Produto">
+
+    </form>
+</body>
+</html>

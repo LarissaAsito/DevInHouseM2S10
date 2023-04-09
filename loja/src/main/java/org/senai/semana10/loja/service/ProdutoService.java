@@ -5,6 +5,7 @@ import org.senai.semana10.loja.repository.ProdutoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProdutoService {
@@ -20,5 +21,13 @@ public class ProdutoService {
 
     public ProdutoEntity saveProduto(ProdutoEntity produto){
         return this.produtoRepository.save(produto);
+    }
+
+    public Optional<ProdutoEntity> findProdutoById (Long id){
+        return this.produtoRepository.findById(id);
+    }
+
+    public void deteleProdutoById(Long id){
+        this.produtoRepository.deleteById(id);
     }
 }

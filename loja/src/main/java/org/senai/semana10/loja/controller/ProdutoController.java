@@ -5,8 +5,10 @@ import org.senai.semana10.loja.model.ProdutoEntity;
 import org.senai.semana10.loja.service.ProdutoService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -62,14 +64,72 @@ public class ProdutoController {
             Model model
     ){
         List<ProdutoDTO> produtoDTOs =
-                produtoService.getAllProdutos()//Lista de PessoaEntity
-                        .stream() //Stream de PessoaEntity, apenas a Stream tem acesso ao map
-                        .map( // vai ser executado para cada item da lista de PessoaEntity
-                                // e vai criar um novo item que será armazenado na lista nova
-                                produtoEntity -> new ProdutoDTO(produtoEntity.getNome(), produtoEntity.getDescricao(), produtoEntity.getDataLancamento(), produtoEntity.getPreco())
+                produtoService.getAllProdutos()
+                        .stream()
+                        .map(
+                                produtoEntity -> new ProdutoDTO(produtoEntity.getId(), produtoEntity.getNome(), produtoEntity.getDescricao(), produtoEntity.getDataLancamento(), produtoEntity.getPreco())
+                        ).collect(Collectors.toList());
+
+        model.addAttribute("produtoDTOs", produtoDTOs);
+        return "lista_produtos";
+    }
+
+    @GetMapping("/deletar/{id}")
+    public String deletarPessoa(
+            @PathVariable("id") Long id,
+            Model model
+    ){
+        produtoService.deteleProdutoById(id);
+
+        List<ProdutoDTO> produtoDTOS =
+                produtoService.getAllProdutos()
+                        .stream()
+                        .map(
+                                produtoEntity -> new ProdutoDTO(produtoEntity.getId(), produtoEntity.getNome(), produtoEntity.getDescricao(), produtoEntity.getDataLancamento(), produtoEntity.getPreco())
+                        ).collect(Collectors.toList()); //define o tipo da lista que vamos salvar
+
+        model.addAttribute("produtoDTOs", produtoDTOS);
+        return "lista_produtos";
+    }
+
+
+    @GetMapping("editar/{id}")
+    public String formularioEditar(@PathVariable("id") long id, Model model) {
+        ProdutoEntity produto = produtoService.findProdutoById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Id inválido:" + id));
+        ProdutoDTO produtoDTO =  new ProdutoDTO(produto.getId(), produto.getNome(), produto.getDescricao(), produto.getDataLancamento(), produto.getPreco());
+
+
+        model.addAttribute("produtoDTO", produtoDTO);
+
+        return "atualiza_produto";
+    }
+
+    @PostMapping("editar/{id}")
+    public String atualizarProduto(@PathVariable("id") Long id, @Validated ProdutoDTO produtoDTO, BindingResult result,
+                                Model model) {
+
+        ProdutoEntity entity = produtoService
+                .findProdutoById(id)
+                .orElse(null);
+
+        entity.setNome(produtoDTO.getNome());
+        entity.setDescricao(produtoDTO.getDescricao());
+        entity.setDataLancamento(produtoDTO.getDataLancamento());
+        entity.setPreco(produtoDTO.getPreco());
+
+
+        produtoService.saveProduto(entity);
+
+        List<ProdutoDTO> produtoDTOs =
+                produtoService.getAllProdutos()
+                        .stream()
+                        .map(
+                                produtoEntity -> new ProdutoDTO(produtoEntity.getId(), produtoEntity.getNome(), produtoEntity.getDescricao(), produtoEntity.getDataLancamento(), produtoEntity.getPreco())
                         ).collect(Collectors.toList()); //define o tipo da lista que vamos salvar
 
         model.addAttribute("produtoDTOs", produtoDTOs);
         return "lista_produtos";
     }
+
 }
